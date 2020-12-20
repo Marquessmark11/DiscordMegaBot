@@ -2,7 +2,6 @@ import discord
 from discord.ext import commands
 import random
 from datetime import datetime as dt
-from selenium import webdriver
 from asyncio import sleep
 
 def oauth2link():
