@@ -5,7 +5,6 @@ from discord.ext.commands import has_permissions, MissingRequiredArgument, BadAr
 from discord.utils import get
 from properties import prefix, token, intents, insensitiveCase, ownerID
 from discord.ext import ui
-from jishaku.cog import jsk
 
 intents = api.Intents.default()
 intents.members = True
@@ -14,7 +13,6 @@ bot = commands.Bot(command_prefix=prefix, intents=intents, case_insensitive=inse
 bot.remove_command('help')
 bot.commands_since_restart = 0
 os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
-bot.load_extension('jishaku')
 
 def who(person, command):
     trigger = f'{person} just ran {command}'
