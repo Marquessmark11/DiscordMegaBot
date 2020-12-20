@@ -9,7 +9,7 @@ class Admin(commands.Cog):
     @commands.is_owner()
     async def change_status_bot(self, ctx, *, activity='placeholder'):
         activity = discord.Game(f'{activity}')
-        await bot.change_presence(status=discord.Status.online, activity=activity)
+        await self.bot.change_presence(status=discord.Status.online, activity=activity)
         await ctx.send(f'Changed activity to {activity}.')
     
     @commands.command()
