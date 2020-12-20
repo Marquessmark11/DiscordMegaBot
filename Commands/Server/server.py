@@ -78,7 +78,7 @@ class Server(commands.Cog):
     
     @commands.command()
     async def serverInfo(self, ctx, *, guild=None):
-        guild = get(self, bot.guilds, name=guild)
+        guild = get(self.bot.guilds, name=guild)
         if guild == None:
             guild = ctx.guild
         c = random.randint(100000, 999999)
