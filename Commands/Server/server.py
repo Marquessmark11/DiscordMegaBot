@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord.ext import ui
 from discord.utils import get
+import random
 
 def oauth2link():
     link = discord.utils.oauth_url(client_id=741624868591763487, permissions=discord.Permissions(permissions=8))
