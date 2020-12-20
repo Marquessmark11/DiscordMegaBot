@@ -1,0 +1,6 @@
+announce
+warn
+clear
+kick
+ban
+unban
