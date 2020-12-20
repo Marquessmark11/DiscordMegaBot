@@ -191,7 +191,7 @@ class General(commands.Cog):
      
     @commands.command()
     async def allCommands(self, ctx):
-        await ctx.send(len(bot.commands))
+        await ctx.send(len(self.bot.commands))
 
 def setup(bot):
     bot.add_cog(General(bot))
