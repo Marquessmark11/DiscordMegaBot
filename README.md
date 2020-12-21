@@ -7,4 +7,4 @@ Click "Download Zip" from the `main` branch to download it
 
 Then run `pip install -r requirements.txt`
 
-And then click `properties.py`, fill in your bots details, and then click `bot.py` to start it.
+And then edit `properties.py`to contain your bots details, and then click `bot.py` to start it.
