@@ -3,8 +3,8 @@ It is a bot that was designed as a rewrite of another bot I made that never real
 
 # Installation
 
-Click "Download Zip" from the `main` branch to download it
+Click "Download Zip" from the `main` branch to download it, extract the file you get.
 
-Then run `pip install -r requirements.txt`
+Then run `pip install -r requirements.txt` in the folder you extracted
 
 And then edit `properties.py`to contain your bots details, and then click `bot.py` to start it.
