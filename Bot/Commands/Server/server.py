@@ -2,6 +2,7 @@ import discord
 from discord.ext import commands
 from discord.ext import ui
 from discord.utils import get
+import random
 
 def oauth2link():
     link = discord.utils.oauth_url(client_id=741624868591763487, permissions=discord.Permissions(permissions=8))
@@ -77,7 +78,7 @@ class Server(commands.Cog):
     
     @commands.command()
     async def serverInfo(self, ctx, *, guild=None):
-        guild = get(self, bot.guilds, name=guild)
+        guild = get(self.bot.guilds, name=guild)
         if guild == None:
             guild = ctx.guild
         c = random.randint(100000, 999999)
