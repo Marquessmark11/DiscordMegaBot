@@ -5,7 +5,6 @@ from discord.ext.commands import has_permissions, MissingRequiredArgument, BadAr
 from discord.utils import get
 from properties import prefix, token, intents, insensitiveCase, ownerID
 from discord.ext import ui
-from jishaku.cog import jsk
 import time, datetime, humanize
 import json
 import subprocess as sp
@@ -26,10 +25,6 @@ def get_prefix(bot, message):
 bot = commands.AutoShardedBot(command_prefix=get_prefix, intents=intents, case_insensitive=insensitiveCase, owner_id=ownerID)
 bot.remove_command('help')
 bot.commands_since_restart = 0
-os.environ["JISHAKU_NO_UNDERSCORE"] = "True"
-os.environ["JISHAKU_NO_DM_TRACEBACK"] = "True" 
-os.environ["JISHAKU_HIDE"] = "True"
-bot.load_extension('jishaku')
 
 def who(person, command):
     trigger = f'{person} just ran {command}'
