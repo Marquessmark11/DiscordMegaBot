@@ -1,3 +1,6 @@
+import re
+import discord
+
 class tools:
     def __init__(self):
         pass
@@ -16,4 +19,9 @@ class tools:
         for g in a:
             h+=(str(g)+'\n')
         return h
+    def bot_mentioned_in(self, message:discord.Message):
+        if len(re.findall(f'<@!{message.guild.me.id}>', message.content)) == 0:
+            return False
+        else:
+            return True
 helper = tools()
