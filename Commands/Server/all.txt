@@ -1,8 +1,0 @@
-whoOwns
-whoHas
-allRoles
-serverIcon
-allMembers
-allBots
-allChannels
-announce
