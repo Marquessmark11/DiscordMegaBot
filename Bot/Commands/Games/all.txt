@@ -1,9 +1,0 @@
-rps
-8ball
-roll
-spinner
-scramble
-reverse
-coinflip
-upsidedown
-eat
