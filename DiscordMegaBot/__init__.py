@@ -9,7 +9,7 @@ import logging
 
 from bot import *
 from properties import *
-from tools import helper
+from Utils.utils import *
 
 VersionInfo = namedtuple('VersionInfo', 'major minor micro releaselevel serial')
 
