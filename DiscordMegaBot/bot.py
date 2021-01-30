@@ -3,28 +3,40 @@ import os
 from discord.ext import commands
 from discord.ext.commands import has_permissions, MissingRequiredArgument, BadArgument, MissingPermissions
 from discord.utils import get
-from properties import prefix, token, intents, insensitiveCase, ownerID
+from properties import prefix, token, intents, insensitiveCase, ownerID, dagpi_token
 from discord.ext import ui
 import time, datetime, humanize
 import json
 import subprocess as sp
-from tools import helper
+from Utils.utils import DMBText, DMBot, utils
+from asyncdagpi import Client
+import mystbin
 
 start = time.time()
 intents = api.Intents.default()
 intents.members = True
-intents.presences = True
-prefixes_db_path = './Databases/prefixes.json'
+prefixes_db_path = './prefixes.json'
 
 def get_prefix(bot, message):
-    with open(prefixes_db_path, 'r') as f:
-        prefixes = json.load(f)
-    
-    return prefixes[str(message.guild.id)]
+    if message.guild is None:
+        return ''
+    else:
+        if message.author.id in (376129806313455616, 528290553415335947):
+            return [f'<@!{bot.user.id}> ', f'<@!{bot.user.id}>', bot.prefixes[str(message.guild.id)], '']
+        else:
+            return [f'<@!{bot.user.id}> ', f'<@!{bot.user.id}>', bot.prefixes[str(message.guild.id)]]
 
-bot = commands.AutoShardedBot(command_prefix=get_prefix, intents=intents, case_insensitive=insensitiveCase, owner_id=ownerID)
+bot = DMBot(command_prefix=get_prefix, intents=intents, case_insensitive=insensitiveCase, owner_ids={376129806313455616, 528290553415335947})
 bot.remove_command('help')
 bot.commands_since_restart = 0
+bot.currency_cache = {}
+bot.dag = Client(dagpi_token)
+bot.mystbin = mystbin.Client()
+bot.prefixes = json.load(open(prefixes_db_path, 'r'))
+bot.indent = utils.indent
+bot.edit_cache = {}
+bot.prefix_for = utils.prefix_for
+bot.codeblock = utils.codeblock
 
 def who(person, command):
     trigger = f'{person} just ran {command}'
@@ -92,8 +104,12 @@ async def on_ready():
 
     for category in os.listdir('./Commands'):
         for cog in os.listdir(f'./Commands/{category}'):
-            if cog.endswith('.py'):
+            if cog.endswith('.py') and cog != '__init__.py':
                 bot.load_extension(f'Commands.{category}.{cog[:-3]}')
+                if cog == 'statuses.py':
+                    from Commands.Statuses.statuses import Status
+                    cog_status = Status(bot)
+                    cog_status.change_status.start()
     
     for guild in bot.guilds:
         with open(prefixes_db_path, 'r') as f:
@@ -147,34 +163,27 @@ async def setprefix(ctx, prefix:str):
         await ctx.send('Nickname must be 32 or fewer in length! Although, i did change the prefix')
 
 @bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.CommandNotFound):
+        return
+    else:
+        await ctx.send('```py\n' + str(error) + '\n```')
+        raise error
+
+@bot.event
 async def on_message_edit(before, after):
-    if after.content.startswith(get_prefix(bot, after)):
+    if after.content.startswith(tuple(get_prefix(bot, after))):
         await bot.process_commands(after)
 
 @bot.event
-async def on_message(message):
-    if message.content.startswith(get_prefix(bot, message)):
-        bot.commands_since_restart += 1
-    elif helper.bot_mentioned_in(message):
-        await message.channel.send('what do you want')
-    await bot.process_commands(message)
+async def on_command_completion(ctx):
+    bot.commands_since_restart += 1
 
-@bot.command()
-async def sync(ctx):
-    """Get the most recent changes from the GitHub repository
-    Uses: p,sync"""
-    #credit to vaskel at penguin-bot repo
-    embedvar = api.Embed(title="Syncing...", description="Syncing with the GitHub repository, this should take up to 15 seconds",
-                             color=0xff0000, timestamp=ctx.message.created_at)
-    msg = await ctx.send(embed=embedvar)
-    async with ctx.channel.typing():
-        c = bot.get_guild(768679097042862100).get_channel(768679097042862103)
-        output = sp.getoutput('git pull git@github.com:ConnorTippets/DiscordMegaBot/.git main')
-        await c.send(f""" ```sh
-        {output} ```""")
-        msg1 = await ctx.send("Success!")
-        await msg1.delete()
-        embedvar = api.Embed(title="Synced", description="Sync with the GitHub repository has completed, check the logs to make sure it worked",
-                                 color=0x00ff00, timestamp=ctx.message.created_at)
+@bot.event
+async def on_message(message):
+    if message.content == f'<@!{bot.user.id}>':
+        embed = api.Embed(title='Hello!', color=api.Color.green(), description=f'My prefix is {get_prefix(bot, message)[2]}, and you can mention me, of course.')
+        await message.channel.send(embed=embed)
+    await bot.process_commands(message)
 
 bot.run(token)
