@@ -6,7 +6,7 @@ class General(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command()
+    @commands.command(brief='Shows you the avatar of the person you choose, it will be you if you don\'t choose one')
     async def yourAvatar(self, ctx, *, member:discord.Member=None):
         if member == None:
             member = ctx.author
@@ -14,14 +14,14 @@ class General(commands.Cog):
         e.set_image(url=member.avatar_url)
         await ctx.send(embed=e)
     
-    @commands.command()
+    @commands.command(brief='Shows you the discord version of the avatar of the person you choose, you if none chosen')
     async def yourDiscordPFP(self, ctx, member:discord.Member=None):
         if member == None:
             member = ctx.author
         avatar = member.default_avatar_url
         await ctx.send(avatar)
     
-    @commands.command()
+    @commands.command(brief='Dm\'s the person you choose')
     async def dm(self, ctx, member : discord.Member, *, text="placeholder"):
         if member.dm_channel == None:
             channel = await member.create_dm()
@@ -31,7 +31,7 @@ class General(commands.Cog):
             await member.dm_channel.send(text)
             await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
     
-    @commands.command()
+    @commands.command(brief='Shows you info on the person you choose, you if none chosen')
     async def whoIs(self, ctx, member:discord.Member=None):
         if member == None:
             member = ctx.author
@@ -47,10 +47,11 @@ class General(commands.Cog):
         e.add_field(name='Id: ', value=f'{member.id}', inline=False)
         e.add_field(name='Bot?: ', value=f'{member.bot}', inline=False)
         e.add_field(name='Tag: ', value=f'{member.discriminator}', inline=False)
+        membersRolesNames.remove('@everyone')
         e.add_field(name='Roles: ', value=f'\n'.join(membersRolesNames), inline=False)
         await ctx.send(embed=e)
     
-    @commands.command()
+    @commands.command(brief='Says if you have the role chosen')
     async def doIHave(self, ctx, *, role:discord.Role):
         for member in role.members:
             if member.id == ctx.author.id:

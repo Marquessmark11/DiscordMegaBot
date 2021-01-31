@@ -6,13 +6,13 @@ class Moderation(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command()
+    @commands.command(brief='Warns the person chosen')
     @has_permissions(kick_members=True)
     async def warn(self, ctx, member : discord.Member, *, reason='placeholder'):
         await ctx.send(member.mention + ' has been warned for the reason of ' + reason)
         await member.send('You were warned in {} with the reason of {}'.format(ctx.guild.name, reason))
     
-    @commands.command()
+    @commands.command(brief='Clears the amount of messages you choose from the channel')
     @has_permissions(manage_messages=True)
     async def clear(self, ctx, clear_amount=5):
         clear_amount = clear_amount + 1
@@ -30,32 +30,26 @@ class Moderation(commands.Cog):
             await ctx.message.delete()
             await ctx.send(f':thumbsup: {new_clear_amount} message have been cleared')
     
-    @commands.command()
+    @commands.command(brief='Kicks the person chosen')
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
         await member.kick(reason=reason)
         await ctx.send(f"{member} has been kicked by {ctx.author} for the reason of {reason}")
         await member.send('You were kicked in {} for the reason of {}'.format(ctx.guild.name, reason))
     
-    @commands.command()
+    @commands.command(brief='Bans the person chosen')
     @has_permissions(ban_members=True)
     async def ban(self, ctx, member : discord.Member, *, reason=None):
         await member.ban(reason=reason)
         await ctx.send(f"{member} has been banned by {ctx.author} for the reason of {reason}")
         await member.send("You were banned in {} for the reason of {}".format(ctx.guild.name, reason))
     
-    @commands.command()
+    @commands.command(brief='Unbans the person chosen')
     @has_permissions(ban_members=True)
-    async def unban(self, ctx, *, member):
-        banned_user = await ctx.guild.bans()
-        member_name, member_discriminator = member.split("#")
-
-        for ban_entry in banned_user:
-            user = ban_entry.user
-            if (user.name, user.discriminator) == (member_name, member.discriminator):
-                await ctx.guild.unban(user)
-                await ctx.send(f"{user.name}#{user.discriminator} has been unbanned by {ctx.author}")
-                return
+    async def unban(self, ctx, *, member_id:int):
+        object = discord.Object(member_id)
+        await ctx.guild.unban(object)
+        await ctx.send('Unbanned {}'.format(member_id))
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

@@ -12,13 +12,13 @@ class Server(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
     
-    @commands.command()
+    @commands.command(brief='Shows the person who owns the current server')
     async def whoOwns(self, ctx):
         owner = ctx.guild.owner
         print(owner)
         await ctx.send(f'{owner.display_name} owns this server')
     
-    @commands.command()
+    @commands.command(brief='Shows who has the role you choose')
     async def whoHas(self, ctx, *, role:discord.Role=None):
         if role == None:
             role = await ui.prompt(ctx, 'What role?')
@@ -31,28 +31,27 @@ class Server(commands.Cog):
                 return
         await ctx.send(', \n'.join(role_members))
     
-    @commands.command()
+    @commands.command(brief='Shows every role in the server')
     async def allRoles(self, ctx):
         roles = []
         for role in ctx.guild.roles:
             roles.append(role.name)
         output = ', \n'.join(roles)
         await ctx.send(output.strip('@everyone, '))
-
-    @commands.command()
+    
+    @commands.command(brief='Shows the icon of the server you choose')
     async def serverIcon(self, ctx, server):
         guild = get(self.bot.guilds, name=server)
-        server = self.bot.get_guild(guild.id)
-        await ctx.send(server.icon_url)
+        await ctx.send(guild.icon_url)
     
-    @commands.command()
+    @commands.command(brief='Shows all people in the current server')
     async def allMembers(self, ctx):
         members = []
         for member in ctx.guild.members:
             members.append(member.display_name)
         await ctx.send(', \n'.join(members))
     
-    @commands.command()
+    @commands.command(brief='Shows every bot in the current server')
     async def allBots(self, ctx):
         bots = []
         for member in ctx.guild.members:
@@ -60,14 +59,14 @@ class Server(commands.Cog):
                 bots.append(member.display_name)
         await ctx.send(', \n'.join(bots))
     
-    @commands.command()
+    @commands.command(brief='Shows every channel in the current server')
     async def allChannels(self, ctx):
         channels = []
         for channel in ctx.guild.text_channels:
             channels.append(channel.name)
         await ctx.send(', \n'.join(channels))
     
-    @commands.command()
+    @commands.command(brief='Says something in the channel chosen')
     async def announce(self, ctx, channel_name, *, announcement=None):
         if announcement == None:
             announcement = await ui.prompt(ctx, 'What would you like to announce?')
@@ -75,7 +74,7 @@ class Server(commands.Cog):
             announcement_channel = get(ctx.guild.text_channels, name=channel_name)
             await announcement_channel.send(announcement)
     
-    @commands.command()
+    @commands.command(brief='Shows info on the current server')
     async def serverInfo(self, ctx, *, guild=None):
         guild = get(self, bot.guilds, name=guild)
         if guild == None:
