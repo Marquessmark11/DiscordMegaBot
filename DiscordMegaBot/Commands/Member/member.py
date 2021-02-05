@@ -26,10 +26,10 @@ class General(commands.Cog):
         if member.dm_channel == None:
             channel = await member.create_dm()
             await channel.send(text)
-            await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
+            await ctx.send(f'`{text}` was sent to {member.display_name}')
         elif member.dm_channel != None:
             await member.dm_channel.send(text)
-            await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
+            await ctx.send(f'`{text}` was sent to {member.display_name}')
     
     @commands.command(brief='Shows you info on the person you choose, you if none chosen')
     async def whoIs(self, ctx, member:discord.Member=None):
@@ -55,9 +55,9 @@ class General(commands.Cog):
     async def doIHave(self, ctx, *, role:discord.Role):
         for member in role.members:
             if member.id == ctx.author.id:
-                await ctx.send('You have {}'.format(role.name))
+                await ctx.send(f'You have {role.name}')
                 return
-        await ctx.send('You don\'t have {}'.format(role.name))
+        await ctx.send(f'You don\'t have {role.name}')
 
 def setup(bot):
     bot.add_cog(General(bot))
