@@ -39,7 +39,7 @@ class API(commands.Cog):
             raw = await self.bot.http.get_guild(id)
             context = await self.bot.get_context(await self.bot.get_guild(801287324109373481).get_channel(801920760565727263).fetch_message(801920951600152587))
             msg = await cmd(context, syntax='json', data=str(json.dumps(raw, indent=4)))
-            await ctx.send('Output too long, so i uploaded it to mystbin: {}'.format(msg.content))
+            await ctx.send(f'Output too long, so i uploaded it to mystbin: {msg.content}')
     
     @commands.command()
     async def charinfo(self, ctx, char:str):
