@@ -1,4 +1,5 @@
 #who call the discord.py lib api WHO
+#reply from con: your mom
 import discord as api
 import os
 from discord.ext import commands
@@ -27,6 +28,7 @@ def get_prefix(bot, message):
         else:
             return [f'<@!{bot.user.id}> ', f'<@!{bot.user.id}>', bot.prefixes[str(message.guild.id)]]
 #is Discord Mega Bot not DM spam bot :)
+#reply from con: no, idiot (sorry, just sick and tired of your stupid commits)
 bot = DMBot(command_prefix=get_prefix, intents=intents, case_insensitive=insensitiveCase, owner_ids={376129806313455616, 528290553415335947})
 bot.remove_command('help')
 bot.commands_since_restart = 0
