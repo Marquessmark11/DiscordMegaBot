@@ -1,4 +1,3 @@
-#who call the discord.py lib api WHO
 import discord as api
 import os
 from discord.ext import commands
@@ -23,10 +22,10 @@ def get_prefix(bot, message):
         return ''
     else:
         if message.author.id in (376129806313455616, 528290553415335947):
-            return [f'<@!{bot.user.id}> ', f'<@!{bot.user.id}>', bot.prefixes[str(message.guild.id)], '']
+            return ['<@!{}> '.format(bot.user.id), '<@!{}>'.format(bot.user.id), bot.prefixes[str(message.guild.id)], '']
         else:
-            return [f'<@!{bot.user.id}> ', f'<@!{bot.user.id}>', bot.prefixes[str(message.guild.id)]]
-#is Discord Mega Bot not DM spam bot :)
+            return ['<@!{}> '.format(bot.user.id), '<@!{}>'.format(bot.user.id), bot.prefixes[str(message.guild.id)]]
+
 bot = DMBot(command_prefix=get_prefix, intents=intents, case_insensitive=insensitiveCase, owner_ids={376129806313455616, 528290553415335947})
 bot.remove_command('help')
 bot.commands_since_restart = 0
@@ -40,7 +39,7 @@ bot.prefix_for = utils.prefix_for
 bot.codeblock = utils.codeblock
 
 def who(person, command):
-    trigger = f'{person} just ran {command}'
+    trigger = '{} just ran {}'.format(person, command)
     return trigger
 
 @bot.command()
@@ -124,7 +123,7 @@ async def on_ready():
         
         elif not prefixes.get(str(guild.id)) is None:
             continue
-    print(f'Logged in as {bot.user.name} - {bot.user.id}')
+    print('Logged in as {} - {}'.format(bot.user.name, bot.user.id))
 
 @bot.event
 async def on_guild_join(guild):
@@ -158,10 +157,10 @@ async def setprefix(ctx, prefix:str):
         json.dump(prefixes, f, indent=4)
     
     try:
-        await ctx.guild.me.edit(nick=f'[{prefix}] Discord Mega Bot')
-        await ctx.send(f'Successfully changed server prefix to `{prefix}`')
+        await ctx.guild.me.edit(nick='[{}] Discord Mega Bot'.format(prefix))
+        await ctx.send('Successfully changed server prefix to `{}`'.format(prefix))
     except api.HTTPException:
-        await ctx.send('Nickname must be 32 or fewer in length! Although, i did change the prefix')
+        await ctx.send('My nickname is too long! It\'s above 32 characters! I did change the prefix though.')
 
 @bot.event
 async def on_command_error(ctx, error):
@@ -182,8 +181,8 @@ async def on_command_completion(ctx):
 
 @bot.event
 async def on_message(message):
-    if message.content == f'<@!{bot.user.id}>':
-        embed = api.Embed(title='Hello!', color=api.Color.green(), description=f'My prefix is {get_prefix(bot, message)[2]}, and you can mention me, of course.')
+    if message.content == '<@!{}>'.format(bot.user.id):
+        embed = api.Embed(title='Hello!', color=api.Color.green(), description='My prefix is {}, and you can mention me, of course.'.format(get_prefix(bot, message)[2]))
         await message.channel.send(embed=embed)
     await bot.process_commands(message)
 
