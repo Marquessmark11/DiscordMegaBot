@@ -391,7 +391,7 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
             e = discord.Embed(title=f"I have found this, is it {random.choice(lis)}?", description=f"The content is shown here:  [Link]({get_paste.url})")
             await ctx.send(embed=e)
         except mystbin.BadPasteID:
-            return await ctx.send(f"Hmmm.. {id} isn't found, try again?")
+            return await ctx.send(f"Hmmm.. {id} isn't found, try again? or give up")
     
     @commands.command(brief='Owoifies text')
     async def owoify(self, ctx, *, text:str):

@@ -10,7 +10,7 @@ class General(commands.Cog):
     async def yourAvatar(self, ctx, *, member:discord.Member=None):
         if member == None:
             member = ctx.author
-        e = discord.Embed(color=random.randint(100000, 999999))
+        e = discord.Embed(color=discord.Color.random())
         e.set_image(url=member.avatar_url)
         await ctx.send(embed=e)
     
