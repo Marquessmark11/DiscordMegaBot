@@ -29,10 +29,12 @@ class Moderation(commands.Cog):
         elif new_clear_amount == 1:
             await ctx.message.delete()
             await ctx.send(f':thumbsup: {new_clear_amount} message have been cleared')
-    
+    #ru sure u don't need to check role stuff :)
     @commands.command(brief='Kicks the person chosen')
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
+        if ctx.author.top_role < member.top_role:
+          return await ctx.send("Your role is lower then {}".format(member))
         await member.kick(reason=reason)
         await ctx.send(f"{member} has been kicked by {ctx.author} for the reason of {reason}")
         await member.send('You were kicked in {} for the reason of {}'.format(ctx.guild.name, reason))
@@ -40,6 +42,8 @@ class Moderation(commands.Cog):
     @commands.command(brief='Bans the person chosen')
     @has_permissions(ban_members=True)
     async def ban(self, ctx, member : discord.Member, *, reason=None):
+        if ctx.author.top_role < member.top_role:
+          return await ctx.send("Your role is lower then {}".format(member))
         await member.ban(reason=reason)
         await ctx.send(f"{member} has been banned by {ctx.author} for the reason of {reason}")
         await member.send("You were banned in {} for the reason of {}".format(ctx.guild.name, reason))
