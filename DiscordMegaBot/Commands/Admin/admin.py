@@ -40,7 +40,7 @@ class Admin(commands.Cog):
         
         with open(currency_db_path, 'w') as f:
             json.dump(currency, f, indent=4)
-        await ctx.send('Given {} {} dollars(s)'.format(member.name, money))
+        await ctx.send(f'Given {member.name} {money} dollars(s)')
     
     @dev.command()
     async def take(self, ctx, member:discord.Member, money:int):
@@ -52,7 +52,7 @@ class Admin(commands.Cog):
         
         with open(currency_db_path, 'w') as f:
             json.dump(currency, f, indent=4)
-        await ctx.send('Taken {} dollar(s) from {}'.format(money, member.name))
+        await ctx.send(f'Taken {money} dollar(s) from {member.name}'.)
     
     @dev.command()
     async def set(self, ctx, member:discord.Member, money:int):
@@ -64,7 +64,7 @@ class Admin(commands.Cog):
         
         with open(currency_db_path, 'w') as f:
             json.dump(currency, f, indent=4)
-        await ctx.send('Set {}\'s amount of dollar(s) to be {}'.format(member.name, money))
+        await ctx.send(f'Set {member.name}\'s amount of dollar(s) to be {money}')
     
     @dev.command()
     async def remove(self, ctx, member:discord.Member):
@@ -76,7 +76,7 @@ class Admin(commands.Cog):
         
         with open(currency_db_path, 'w') as f:
             json.dump(currency, f, indent=4)
-        await ctx.send('Removed {} from database'.format(member.name))
+        await ctx.send(f'Removed {member.name} from database')
     
     @dev.command(name='help')
     async def devHelp(self, ctx):
