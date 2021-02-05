@@ -153,7 +153,7 @@ class Admin(commands.Cog):
         with open('./bans.json', 'w') as f:
             json.dump(bans, f, indent=4)
         
-        await ctx.send('Successfully blacklisted {} from this bot'.format(member.display_name))
+        await ctx.send(f'Successfully blacklisted {member.display_name} from this bot')
     
     @dev.command()
     async def whitelist(self, ctx, member:discord.Member):
@@ -165,7 +165,7 @@ class Admin(commands.Cog):
         with open('./bans.json', 'w') as f:
             json.dump(bans, f, indent=4)
         
-        await ctx.send('Successfully whitelisted {} from this bot'.format(member.display_name))
+        await ctx.send(f'Successfully whitelisted {member.display_name} from this bot')
 
 def setup(bot):
     bot.add_cog(Admin(bot))
