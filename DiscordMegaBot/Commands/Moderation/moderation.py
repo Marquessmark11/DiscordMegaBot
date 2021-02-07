@@ -10,7 +10,7 @@ class Moderation(commands.Cog):
     @has_permissions(kick_members=True)
     async def warn(self, ctx, member : discord.Member, *, reason='placeholder'):
         await ctx.send(member.mention + ' has been warned for the reason of ' + reason)
-        await member.send(f'You were warned in {ctx.guild.name} with the reason of {reason}')
+        await member.send('You were warned in {} with the reason of {}'.format(ctx.guild.name, reason))
     
     @commands.command(brief='Clears the amount of messages you choose from the channel')
     @has_permissions(manage_messages=True)
@@ -29,31 +29,27 @@ class Moderation(commands.Cog):
         elif new_clear_amount == 1:
             await ctx.message.delete()
             await ctx.send(f':thumbsup: {new_clear_amount} message have been cleared')
-    #ru sure u don't need to check role stuff :)
+    
     @commands.command(brief='Kicks the person chosen')
     @has_permissions(kick_members=True)
     async def kick(self, ctx, member : discord.Member, *, reason=None):
-        if ctx.author.top_role < member.top_role:
-          return await ctx.send(f"Your role is lower then {member}")
         await member.kick(reason=reason)
         await ctx.send(f"{member} has been kicked by {ctx.author} for the reason of {reason}")
-        await member.send(f'You were kicked in {ctx.guild.name} for the reason of {reason}')
+        await member.send('You were kicked in {} for the reason of {}'.format(ctx.guild.name, reason))
     
     @commands.command(brief='Bans the person chosen')
     @has_permissions(ban_members=True)
     async def ban(self, ctx, member : discord.Member, *, reason=None):
-        if ctx.author.top_role < member.top_role:
-          return await ctx.send(f"Your role is lower then {member}")
         await member.ban(reason=reason)
         await ctx.send(f"{member} has been banned by {ctx.author} for the reason of {reason}")
-        await member.send(f"You were banned in {ctx.guild.name} for the reason of {reason}")
+        await member.send("You were banned in {} for the reason of {}".format(ctx.guild.name, reason))
     
     @commands.command(brief='Unbans the person chosen')
     @has_permissions(ban_members=True)
     async def unban(self, ctx, *, member_id:int):
         object = discord.Object(member_id)
         await ctx.guild.unban(object)
-        await ctx.send(f'Unbanned {member_id}')
+        await ctx.send('Unbanned {}'.format(member_id))
 
 def setup(bot):
     bot.add_cog(Moderation(bot))

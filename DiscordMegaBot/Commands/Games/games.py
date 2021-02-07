@@ -28,37 +28,41 @@ class MyMenu(menus.Menu):
     
     @menus.button('1\U000020e3')
     async def on_digit_one(self, payload):
-        if self.playing_user == payload.user_id:
-            if self.playing_user == self.ctx.buddy:
-                for index in range(len(self.dictofplaces)):
-                    if self.dictofplaces[index] == chr(10060) and self.dictofplaces[index+1] == chr(10060) and self.dictofplaces[index+2] == chr(10060):
-                        await self.ctx.send(f'<@!{payload.user_id}>, you won!')
-                        self.stop()
-                    if self.dictofplaces[index] == chr(10060) and self.dictofplaces[index+5] == chr(10060) and self.dictofplaces[index+4] == chr(10060):
-                        await self.ctx.send(f'<@!{payload.user_id}>, you won!')
-                        self.stop()
-            else:
-                for index in range(len(self.dictofplaces)):
-                    if self.dictofplaces[index] == chr(11093) and self.dictofplaces[index+1] == chr(11093) and self.dictofplaces[index+2] == chr(11093):
-                        await self.ctx.send(f'<@!{payload.user_id}>, you won!')
-                        self.stop()
-                    if self.dictofplaces[index] == chr(11093) and self.dictofplaces[index+5] == chr(11093) and self.dictofplaces[index+4] == chr(11093):
-                        await self.ctx.send(f'<@!{payload.user_id}>, you won!')
-                        self.stop()
-                self.dictofplaces[0] = chr(11093)
-            resp = ''
-            for index in range(len(self.dictofplaces)):
-                if index in (2, 5):
-                    resp += (self.dictofplaces[index] + '\n')
-                    continue
-                resp += self.dictofplaces[index]
-            if self.playing_user == self.ctx.buddy:
-                self.playing_user = self.ctx.playing_users[1]
-            else:
-                self.playing_user = self.ctx.playing_users[0]
-            await self.message.edit(content=resp + f"\nThere are 2 players, {', '.join([self.ctx.bot.get_user(id).name for id in self.ctx.playing_users])}. It is now {self.ctx.bot.get_user(self.playing_user).name}'s turn")
+        if self.dictofplaces[0] != '⬜':
+            await self.ctx.send(f'<@!{payload.user_id}>, that place exists already!')
+            return
         else:
-            await self.ctx.send(f'<@!{payload.user_id}>, its not your turn!')
+            if self.playing_user == payload.user_id:
+                if self.playing_user == self.ctx.buddy:
+                    for index in range(len(self.dictofplaces)):
+                        if self.dictofplaces[index] == chr(10060) and self.dictofplaces[index+1] == chr(10060) and self.dictofplaces[index+2] == chr(10060):
+                            await self.ctx.send(f'<@!{payload.user_id}>, you won!')
+                            self.stop()
+                        if self.dictofplaces[index] == chr(10060) and self.dictofplaces[index+5] == chr(10060) and self.dictofplaces[index+4] == chr(10060):
+                            await self.ctx.send(f'<@!{payload.user_id}>, you won!')
+                            self.stop()
+                else:
+                    for index in range(len(self.dictofplaces)):
+                        if self.dictofplaces[index] == chr(11093) and self.dictofplaces[index+1] == chr(11093) and self.dictofplaces[index+2] == chr(11093):
+                            await self.ctx.send(f'<@!{payload.user_id}>, you won!')
+                            self.stop()
+                        if self.dictofplaces[index] == chr(11093) and self.dictofplaces[index+5] == chr(11093) and self.dictofplaces[index+4] == chr(11093):
+                            await self.ctx.send(f'<@!{payload.user_id}>, you won!')
+                            self.stop()
+                    self.dictofplaces[0] = chr(11093)
+                resp = ''
+                for index in range(len(self.dictofplaces)):
+                    if index in (2, 5):
+                        resp += (self.dictofplaces[index] + '\n')
+                        continue
+                    resp += self.dictofplaces[index]
+                if self.playing_user == self.ctx.buddy:
+                    self.playing_user = self.ctx.playing_users[1]
+                else:
+                    self.playing_user = self.ctx.playing_users[0]
+                await self.message.edit(content=resp + f"\nThere are 2 players, {', '.join([self.ctx.bot.get_user(id).name for id in self.ctx.playing_users])}. It is now {self.ctx.bot.get_user(self.playing_user).name}'s turn")
+            else:
+                await self.ctx.send(f'<@!{payload.user_id}>, its not your turn!')
     
     @menus.button('2\U000020e3')
     async def on_digit_two(self, payload):
@@ -291,6 +295,110 @@ class MyMenu(menus.Menu):
             return False
         return payload.emoji in self.buttons
 
+class TestMover(menus.Menu):
+    async def send_initial_message(self, ctx, channel):
+        self.listofplaces = ['⬜', '⬜', '⬜', '⬜', '😳', '⬜', '⬜', '⬜', '⬜']
+        self.onebarlength = 3
+        self.snakePos = 4
+        resp = ''
+        for place in range(len(self.listofplaces)):
+            if place in (2, 5):
+                resp += (self.listofplaces[place] + '\n')
+                continue
+            resp += self.listofplaces[place]
+        return await ctx.send(resp)
+    
+    @menus.button('\N{LEFTWARDS BLACK ARROW}')
+    async def on_left_arrow(self, payload):
+        try:
+            pSnakePos = self.snakePos
+            self.snakePos -= 1
+            self.listofplaces[self.snakePos] = '😳'
+            self.listofplaces[pSnakePos] = '⬜'
+            resp = ''
+            for place in range(len(self.listofplaces)):
+                if place in (2, 5):
+                    resp += (self.listofplaces[place] + '\n')
+                    continue
+                resp += self.listofplaces[place]
+            await self.message.edit(content=resp)
+        except IndexError:
+            return
+
+    @menus.button('\N{UPWARDS BLACK ARROW}')
+    async def on_up_arrow(self, payload):
+        try:
+            pSnakePos = self.snakePos
+            self.snakePos -= self.onebarlength
+            self.listofplaces[self.snakePos] = '😳'
+            self.listofplaces[pSnakePos] = '⬜'
+            resp = ''
+            for place in range(len(self.listofplaces)):
+                if place in (2, 5):
+                    resp += (self.listofplaces[place] + '\n')
+                    continue
+                resp += self.listofplaces[place]
+            await self.message.edit(content=resp)
+        except IndexError:
+            return
+    
+    @menus.button('\N{DOWNWARDS BLACK ARROW}')
+    async def on_down_arrow(self, payload):
+        try:
+            pSnakePos = self.snakePos
+            self.snakePos += self.onebarlength
+            self.listofplaces[self.snakePos] = '😳'
+            self.listofplaces[pSnakePos] = '⬜'
+            resp = ''
+            for place in range(len(self.listofplaces)):
+                if place in (2, 5):
+                    resp += (self.listofplaces[place] + '\n')
+                    continue
+                resp += self.listofplaces[place]
+            await self.message.edit(content=resp)
+        except IndexError:
+            return
+    
+    @menus.button('\N{BLACK RIGHTWARDS ARROW}')
+    async def on_right_arrow(self, payload):
+        try:
+            pSnakePos = self.snakePos
+            self.snakePos += 1
+            self.listofplaces[self.snakePos] = '😳'
+            self.listofplaces[pSnakePos] = '⬜'
+            resp = ''
+            for place in range(len(self.listofplaces)):
+                if place in (2, 5):
+                    resp += (self.listofplaces[place] + '\n')
+                    continue
+                resp += self.listofplaces[place]
+            await self.message.edit(content=resp)
+        except IndexError:
+            return
+    
+    @menus.button('\N{BLACK SQUARE FOR STOP}\ufe0f')
+    async def on_stop(self, payload):
+        self.stop()
+    
+    def reaction_check(self, payload):
+        """The function that is used to check whether the payload should be processed.
+        This is passed to :meth:`discord.ext.commands.Bot.wait_for <Bot.wait_for>`.
+        There should be no reason to override this function for most users.
+        Parameters
+        ------------
+        payload: :class:`discord.RawReactionActionEvent`
+            The payload to check.
+        Returns
+        ---------
+        :class:`bool`
+            Whether the payload should be processed.
+        """
+        if payload.message_id != self.message.id:
+            return False
+        if self.ctx.bot.get_user(payload.user_id).bot:
+            return False
+        return payload.emoji in self.buttons
+
 eightBall_msgs = ["It is certain","Without a doubt", "\
 You may rely on it","\
 Yes definitely","\
@@ -337,7 +445,7 @@ class Games(commands.Cog):
         await asyncio.sleep(0.3)
         await ctx.send('I chose {}.. you chose {}.'.format(a, ropasc))
     
-    @commands.command(aliases=['8ball'], brief='Shows you a random answer to your yes or no question')
+    @commands.command(name='8ball', brief='Shows you a random answer to your yes or no question')
     async def _8ball(self, ctx, *, question):
         answer = random.choice(eightBall_msgs)
         await ctx.send(f'Question: {question}\nAnswer: {str(answer)}')

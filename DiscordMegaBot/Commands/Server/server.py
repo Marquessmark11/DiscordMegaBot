@@ -5,7 +5,7 @@ from discord.utils import get
 
 def oauth2link():
     link = discord.utils.oauth_url(client_id=741624868591763487, permissions=discord.Permissions(permissions=8))
-    e = discord.Embed(title='Invite DMB To your server', description=f'[:robot: Invite Link]({link})', color=discord.Color.random())
+    e = discord.Embed(title='Invite DMB To your server', description=f'[:robot: Invite Link]({link})', color=random.randint(100000, 999999))
     return e
 
 class Server(commands.Cog):

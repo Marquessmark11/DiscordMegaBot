@@ -13,6 +13,30 @@ import praw
 import sys
 import humanize
 import mystbin
+import aiohttp
+import datetime
+import urllib
+import requests
+from bs4 import BeautifulSoup
+
+def scrape_google(query):
+    query = query.replace(' ', '+')
+    url = f"https://google.com/search?q={query}"
+    USER_AGENT = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:65.0) Gecko/20100101 Firefox/65.0"
+    headers = {"user-agent": USER_AGENT}
+    resp = requests.get(url, headers=headers)
+    if resp.status_code == 200:
+        soup = BeautifulSoup(resp.content, "html.parser")
+        results = []
+        for g in soup.find_all('div', class_='r'):
+            anchors = g.find_all('a')
+            if anchors:
+                link = anchors[0]['href']
+                item = {
+                    "link": link
+                }
+                results.append(item)
+        return results
 
 def oauth2link():
     link = discord.utils.oauth_url(client_id=741624868591763487, permissions=discord.Permissions(permissions=8))
@@ -72,65 +96,47 @@ class General(commands.Cog):
     async def pengoeatfish(self, ctx):
         await ctx.send("https://cdn1.vectorstock.com/i/1000x1000/16/85/penguin-eating-fish-on-ice-vector-6581685.jpg")
     
-    @commands.group(brief='Shows help for this bot', invoke_without_command=True)
-    async def help(self, ctx):
-      co = random.randint(100000, 999999)
-      helpc = discord.Embed(color=co, title='Help Categories')
-      helpc.add_field(name='Categories', value=f"""
-```
-General
-Server
-Games
-Member
-Moderation
-Currency
-Web
-Image
-```
-Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help category <category name>.
-      """)
-      await ctx.send(embed=helpc)
-    
-    @help.command(brief='Shows the commands in a category')
-    async def category(self, ctx, category:str):
+    @commands.command(brief='Shows help for this bot', invoke_without_command=True)
+    async def help(self, ctx, query:str=None):
+      if not query:
           co = random.randint(100000, 999999)
-          if category.upper() == 'GENERAL':
-              general = discord.Embed(color=co, title='General Commands', description=f'distracted\ngetstickbuggedlol\necho\nlife\nrcolor\nrandomCharacter\nabcFull\nshrug\nlenny\npengoeatfish\nhelp\nwhattodotoday\nspam\ninvite\ncouch\nfoo\nping\nabc\ncat\ndog\nbird\nhello\nrandom\nlick\nkiss\nsource\nuptime\nowoify\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=general)
-          elif category.upper() == 'SERVER':
-              server = discord.Embed(color=co, title='Server Commands', description=f'whoOwns\nwhoHas\nallRoles\nserverIcon\nallMembers\nallBots\nallChannels\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=server)
-          elif category.upper() == 'GAMES':
-              games = discord.Embed(color=co, title='Games', description=f'rps\n8ball\nchoice\npseudotext\nroll\nspinner\nscramble\nreverse\ncoinflip\nupsidedown\neat\nguessnum\npie\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=games)
-          elif category.upper() == 'MEMBER':
-              member = discord.Embed(color=co, title='Member Commands', description=f'yourAvatar\nyourDiscordPFP\ndm\nwhoIs\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=member)
-          elif category.upper() == 'MODERATION':
-              moderation = discord.Embed(color=co, title='Moderation Commands', description=f'announce\nwarn\nclear\nkick\nban\nunban\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=moderation)
-          elif category.upper() == 'CURRENCY':
-              currency = discord.Embed(color=co, title='Currency Commands', description=f'bal\nsteal\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=currency)
-          elif category.upper() == 'WEB':
-              web = discord.Embed(color=co, title='Web Commands', description=f'mystbin\ngetbin\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=web)
-          elif category.upper() == 'IMAGE':
-              image = discord.Embed(color=co, title='Image Commands', description=f'colors\nwanted\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help command <command name> to get help on a command')
-              await ctx.send(embed=image)
+          helpc = discord.Embed(color=co, title='Help Categories')
+          cogs = [name for name in self.bot.cogs]
+          cogs.remove('Admin')
+          cogs.remove('Jishaku')
+          cogs.remove('Modmail')
+          cogs.remove('Status')
+          cogs.remove('Uptime')
+          categories = '\n'.join(cogs)
+          helpc.add_field(name='Categories', value=f"""
+```
+{categories}
+```
+Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help <category name>.
+          """)
+          await ctx.send(embed=helpc)
+      else:
+          maybe_cog = self.bot.get_cog(query.lower().capitalize())
+          if not maybe_cog and query.lower() == 'api':
+              maybe_cog = self.bot.get_cog('API')
+          if maybe_cog:
+              if maybe_cog.qualified_name == 'Admin' and not ctx.bot.is_owner(ctx.author):
+                  await ctx.send('Access Denied')
+                  return
+              else:
+                  co = random.randint(100000, 999999)
+                  commands = '\n'.join([command.name for command in maybe_cog.__cog_commands__])
+                  e = discord.Embed(color=co, title=f'{maybe_cog.qualified_name}', description=f'{commands}\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help <command name> to get help on a command')
+                  await ctx.send(embed=e)
           else:
-              await ctx.send('That isn\'t a category!')
-    
-    @help.command(brief='Shows help for the command selected')
-    async def command(self, ctx, command_name:str):
-        try:
-            command = self.bot.get_command(command_name)
-            co = random.randint(100000, 999999)
-            embed = discord.Embed(color=co, description=command.brief)
-            embed.set_author(name=command_name)
-            await ctx.send(embed=embed)
-        except AttributeError:
-            await ctx.send('That isn\'t a command!')
+              command = self.bot.get_command(query)
+              if command.cog.qualified_name == 'Admin' and not await ctx.bot.is_owner(ctx.author):
+                  await ctx.send('Access Denied.')
+                  return
+              co = random.randint(100000, 999999)
+              embed = discord.Embed(color=co, description=command.brief)
+              embed.set_author(name=query)
+              await ctx.send(embed=embed)
     
     @commands.command(brief='I was really tired when making this command.')
     async def whattodotoday(self, ctx):
@@ -163,6 +169,18 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
 
     @commands.command(brief='Shows you the bot\'s ping')
     async def ping(self, ctx):
+        t = time.perf_counter()
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://dagpi.xyz/image/wanted", headers={'Authorization': self.bot.dag.token}) as resp:
+                pass
+        e = time.perf_counter()
+        t = time.perf_counter()
+        async with aiohttp.ClientSession() as session:
+            async with session.get("https://beta.dagpi.xyz/image/wanted", headers={'Authorization': self.bot.dag.token}) as resp:
+                pass
+        e = time.perf_counter()
+        dagpi_latency = (e -t) * 1000
+        beta_dagpi_latency = (e -t) * 1000
         latency = round((self.bot.latency * 1000), 6)
         color = random.randint(100000, 999999)
         start = time.perf_counter()
@@ -172,6 +190,8 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
         e = discord.Embed(title=':ping_pong: Pong!', color=color)
         e.add_field(name='Websocket Latency', value="{}ms".format(latency))
         e.add_field(name='Typing Latency', value="{:.2f}ms".format(duration))
+        e.add_field(name='Dagpi Latency', value=f'{round(dagpi_latency, 6)}ms')
+        e.add_field(name='Beta Dagpi Latency', value=f'{round(beta_dagpi_latency, 6)}ms')
         e.set_thumbnail(url=self.bot.user.avatar_url)
         await message.edit(content="", embed=e)
     
@@ -242,7 +262,7 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
         e.add_field(name='Servers: ', value=len(self.bot.guilds), inline=False)
         e.add_field(name='Users: ', value=len(self.bot.users), inline=False)
         e.add_field(name='Existed For: ', value=humanize.precisedelta(self.bot.user.created_at), inline=False)
-        e.add_field(name='Been Up For: ', value=self.bot.uptime_delta_humanized_precise(), inline=False)
+        e.add_field(name='Been Up For: ', value=humanize.precisedelta(datetime.timedelta(seconds=time.time() - self.bot._start)), inline=False)
         e.add_field(name='Credit: ', value='I made most of it myself, but i\'ll give credit where credit is due:', inline=False)
         e.add_field(name='Danny', value='https://github.com/Rapptz/RoboDanny\nhttps://github.com/Rapptz/discord.py', inline=False)
         e.add_field(name='Discord.py Server members', value='https://discord.gg/dpy', inline=True)
@@ -286,16 +306,6 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
 
         final_url = f'<{source_url}/blob/{branch}/DiscordMegaBot/{location}#L{firstlineno + 1}-L{firstlineno + len(lines)}>'
         await ctx.send(final_url)
-    
-    @commands.command(brief='Shows you the direct source blob for a command')
-    async def source_direct(self, ctx, *, command:str = None):
-        try:
-            await ctx.send('```py\n' + inspect.getsource(self.bot.get_command(command).callback) + '```')
-        except discord.HTTPException:
-            mystbin = self.bot.get_command('mystbin')
-            context = commands.Context(prefix=ctx.prefix, message=await self.bot.get_guild(801287324109373481).get_channel(801920760565727263).fetch_message(801920951600152587))
-            msg = await mystbin(context, syntax='python', data=inspect.getsource(self.bot.get_command(command).callback))
-            await ctx.send('Output too long, uploaded to mystbin: {}'.format((await self.bot.get_guild(801287324109373481).get_channel(801920760565727263).fetch_message(msg.id)).content))
     
     @commands.command(aliases=['connect'], brief='Makes the bot join a VC')
     async def join(self, ctx):
@@ -365,15 +375,16 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
     
     @commands.command(brief='Gets a meme from r/memes or r/dankmemes')
     async def meme(self, ctx):
-        reddit = praw.Reddit(client_id="client_id",
-                     client_secret="client_secret",
-                     user_agent="memesScript from u/reddit name")
-        subreddit = random.choice(['memes', 'dankmemes'])
-        submission = random.choice([submission for submission in reddit.subreddit(subreddit).top(limit=39)])
-        embed=discord.Embed(title=submission.title)
-        embed.set_author(name=f'u/{submission.author.name}')
-        embed.set_image(url=submission.url)
-        embed.set_footer(text=f'Score: {submission.score}, From r/{subreddit}')
+        async with ctx.typing():
+            reddit = praw.Reddit(client_id="id",
+                         client_secret="secret",
+                         user_agent="memesScript from u/name")
+            subreddit = random.choice(['memes', 'dankmemes'])
+            submission = random.choice([submission for submission in reddit.subreddit(subreddit).top(limit=39)])
+            embed=discord.Embed(title=submission.title)
+            embed.set_author(name=f'u/{submission.author.name}')
+            embed.set_image(url=submission.url)
+            embed.set_footer(text=f'Score: {submission.score}, From r/{subreddit}')
         await ctx.send(embed=embed)
     
     @commands.command(brief='Posts something to mystbin')
@@ -391,15 +402,11 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
             e = discord.Embed(title=f"I have found this, is it {random.choice(lis)}?", description=f"The content is shown here:  [Link]({get_paste.url})")
             await ctx.send(embed=e)
         except mystbin.BadPasteID:
-            return await ctx.send(f"Hmmm.. {id} isn't found, try again? or give up")
+            return await ctx.send(f"Hmmm.. {id} isn't found, try again?")
     
     @commands.command(brief='Owoifies text')
     async def owoify(self, ctx, *, text:str):
         await ctx.send(await ctx.owoify(text))
-    
-    @commands.command()
-    async def testers(self, ctx):
-        await ctx.send(dir(ctx))
     
     @commands.command(brief='Finds the average of numbers')
     async def avg(self, ctx, *args):
@@ -410,6 +417,10 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
             await ctx.send('Average of `{}`: {}'.format(values, round(sum(values) / len(values))))
         except ValueError:
             await ctx.send('Error: one of those values is **not a number**, cannot find average.')
+    
+    @commands.command(aliases=['g'], brief='Shows the google results for a query')
+    async def google(self, ctx, *, query:str):
+        await ctx.send(await self.bot.loop.run_in_executor(None, scrape_google, query))
 
 def setup(bot):
     bot.add_cog(General(bot))

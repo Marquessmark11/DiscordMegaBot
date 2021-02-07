@@ -10,7 +10,7 @@ class General(commands.Cog):
     async def yourAvatar(self, ctx, *, member:discord.Member=None):
         if member == None:
             member = ctx.author
-        e = discord.Embed(color=discord.Color.random())
+        e = discord.Embed(color=random.randint(100000, 999999))
         e.set_image(url=member.avatar_url)
         await ctx.send(embed=e)
     
@@ -26,10 +26,10 @@ class General(commands.Cog):
         if member.dm_channel == None:
             channel = await member.create_dm()
             await channel.send(text)
-            await ctx.send(f'`{text}` was sent to {member.display_name}')
+            await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
         elif member.dm_channel != None:
             await member.dm_channel.send(text)
-            await ctx.send(f'`{text}` was sent to {member.display_name}')
+            await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
     
     @commands.command(brief='Shows you info on the person you choose, you if none chosen')
     async def whoIs(self, ctx, member:discord.Member=None):
@@ -55,9 +55,9 @@ class General(commands.Cog):
     async def doIHave(self, ctx, *, role:discord.Role):
         for member in role.members:
             if member.id == ctx.author.id:
-                await ctx.send(f'You have {role.name}')
+                await ctx.send('You have {}'.format(role.name))
                 return
-        await ctx.send(f'You don\'t have {role.name}')
+        await ctx.send('You don\'t have {}'.format(role.name))
 
 def setup(bot):
     bot.add_cog(General(bot))
