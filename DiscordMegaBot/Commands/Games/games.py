@@ -431,7 +431,7 @@ class Games(commands.Cog):
         if ropasc is None:
             await ctx.send('Missing Required Arguments!')
             return
-        if not ropasc in rocpapsci:
+        if ropasc not in rocpapsci:
             await ctx.send('Invalid Argument! Valid Arguments: paper, scissors, rock')
             return
         a = random.choice(rocpapsci)
@@ -458,9 +458,7 @@ class Games(commands.Cog):
         if dice < 1:
             await ctx.send(f'Sorry, but i don\'t have {dice} die')
             return
-        a = []
-        for x in range(dice):
-            a.append(str(random.randint(0, 10)))
+        a = [str(random.randint(0, 10)) for _ in range(dice)]
         await ctx.send('You Rolled: \n`' + (', '.join(a)) + '`')
     
     @commands.command(brief='Makes the bot choose a random option out of what you give it')
@@ -500,22 +498,22 @@ class Games(commands.Cog):
     
     @commands.command(brief='Eats the person you choose')
     async def eat(self, ctx, member:discord.Member=None, *, reason:str=None):
-        if member == None or member == ctx.author:
+        if member is None or member == ctx.author:
             await ctx.send(f'{ctx.author.mention} ate themselves...')
             return
-        if reason == None:
+        if reason is None:
             await ctx.send(f'{ctx.author.mention} ate {member.mention}')
-        elif reason != None:
+        else:
             await ctx.send(f'{ctx.author.mention} ate {member.mention} for {reason}')
     
     @commands.command(brief='Kills the person you choose')
     async def kill(self, ctx, member:discord.Member=None, *, reason:str=None):
-        if member == None or member == ctx.author:
+        if member is None or member == ctx.author:
             await ctx.send(f'{ctx.author.mention} commited suicide')
             return
-        if reason == None:
+        if reason is None:
             await ctx.send(f'{ctx.author.mention} killed {member.mention}')
-        elif reason != None:
+        else:
             await ctx.send(f'{ctx.author.mention} killed {member.mention} for {reason}')
     
     @commands.command(brief='Generates a random number and makes you guess it')
@@ -524,12 +522,12 @@ class Games(commands.Cog):
         max = random.randint(1, 100 + min)
         num = random.randint(min, max)
         print('Someone ran guessnum, the number is {}'.format(num))
-        for max in range(4):
+        for _ in range(4):
             guess = await ui.prompt(ctx, f'I\'m thinking of a number between {num-random.randint(num-40, num)} and {num+random.randint(num, num+40)}, What do you think it is? (BTW the range of the numbers might change, but the real number never changes)')
             if guess == str(num):
                 await ctx.send('Correct!')
                 return
-            elif guess != str(num):
+            else:
                 await ctx.send('Incorrect....')
         await ctx.send(f'You\'ve ran out of guesses! I was thinking of {num}....')
     
@@ -551,7 +549,7 @@ class Games(commands.Cog):
                 if guesses == 0:
                     await ctx.send(f'You have no guesses left. It was {wtp_object.answer}')
                     break
-                elif guess.lower() == 'stop' or guess.lower() == 'end':
+                elif guess.lower() in ['stop', 'end']:
                     await ctx.send('Stopping Game...')
                     self.wtp_is_playing = False
                     break
@@ -560,9 +558,9 @@ class Games(commands.Cog):
     
     @commands.command(brief='Roasts people, roasty toasty!')
     async def roast(self, ctx, member:discord.Member = None):
-        if member == None:
+        if member is None:
             member = ctx.author
-        
+
         await ctx.send(f'**{member.name}**, {await self.bot.dag.roast()}')
     
     @commands.command(brief='Catch the pie within the time')

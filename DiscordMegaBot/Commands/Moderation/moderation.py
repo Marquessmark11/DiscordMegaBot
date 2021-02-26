@@ -20,13 +20,10 @@ class Moderation(commands.Cog):
         if new_clear_amount != 1:
             if new_clear_amount > 250:
                 await ctx.send('Error Code 007: Max clear amount is 250')
-            elif new_clear_amount < 250:
+            elif new_clear_amount < 250 or new_clear_amount == 250:
                 await ctx.channel.purge(limit=clear_amount)
                 await ctx.send(f':thumbsup: {new_clear_amount} messages have been cleared')
-            elif new_clear_amount == 250:
-                await ctx.channel.purge(limit=clear_amount)
-                await ctx.send(f':thumbsup: {new_clear_amount} messages have been cleared')
-        elif new_clear_amount == 1:
+        else:
             await ctx.message.delete()
             await ctx.send(f':thumbsup: {new_clear_amount} message have been cleared')
     

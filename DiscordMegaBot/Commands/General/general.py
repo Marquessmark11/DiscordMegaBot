@@ -40,8 +40,11 @@ def scrape_google(query):
 
 def oauth2link():
     link = discord.utils.oauth_url(client_id=741624868591763487, permissions=discord.Permissions(permissions=8))
-    e = discord.Embed(title='Invite DMB To your server', description=f'[:robot: Invite Link]({link})', color=random.randint(100000, 999999))
-    return e
+    return discord.Embed(
+        title='Invite DMB To your server',
+        description=f'[:robot: Invite Link]({link})',
+        color=random.randint(100000, 999999),
+    )
 
 class General(commands.Cog):
     def __init__(self, bot):
@@ -98,45 +101,45 @@ class General(commands.Cog):
     
     @commands.command(brief='Shows help for this bot', invoke_without_command=True)
     async def help(self, ctx, query:str=None):
-      if not query:
-          co = random.randint(100000, 999999)
-          helpc = discord.Embed(color=co, title='Help Categories')
-          cogs = [name for name in self.bot.cogs]
-          cogs.remove('Admin')
-          cogs.remove('Jishaku')
-          cogs.remove('Modmail')
-          cogs.remove('Status')
-          cogs.remove('Uptime')
-          categories = '\n'.join(cogs)
-          helpc.add_field(name='Categories', value=f"""
+        if not query:
+            co = random.randint(100000, 999999)
+            helpc = discord.Embed(color=co, title='Help Categories')
+            cogs = [name for name in self.bot.cogs]
+            cogs.remove('Admin')
+            cogs.remove('Jishaku')
+            cogs.remove('Modmail')
+            cogs.remove('Status')
+            cogs.remove('Uptime')
+            categories = '\n'.join(cogs)
+            helpc.add_field(name='Categories', value=f"""
 ```
 {categories}
 ```
 Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help <category name>.
           """)
-          await ctx.send(embed=helpc)
-      else:
-          maybe_cog = self.bot.get_cog(query.lower().capitalize())
-          if not maybe_cog and query.lower() == 'api':
-              maybe_cog = self.bot.get_cog('API')
-          if maybe_cog:
-              if maybe_cog.qualified_name == 'Admin' and not ctx.bot.is_owner(ctx.author):
-                  await ctx.send('Access Denied')
-                  return
-              else:
-                  co = random.randint(100000, 999999)
-                  commands = '\n'.join([command.name for command in maybe_cog.__cog_commands__])
-                  e = discord.Embed(color=co, title=f'{maybe_cog.qualified_name}', description=f'{commands}\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help <command name> to get help on a command')
-                  await ctx.send(embed=e)
-          else:
-              command = self.bot.get_command(query)
-              if command.cog.qualified_name == 'Admin' and not await ctx.bot.is_owner(ctx.author):
-                  await ctx.send('Access Denied.')
-                  return
-              co = random.randint(100000, 999999)
-              embed = discord.Embed(color=co, description=command.brief)
-              embed.set_author(name=query)
-              await ctx.send(embed=embed)
+            await ctx.send(embed=helpc)
+        else:
+            maybe_cog = self.bot.get_cog(query.lower().capitalize())
+            if not maybe_cog and query.lower() == 'api':
+                maybe_cog = self.bot.get_cog('API')
+            if maybe_cog:
+                if maybe_cog.qualified_name == 'Admin' and not ctx.bot.is_owner(ctx.author):
+                    await ctx.send('Access Denied')
+                    return
+                else:
+                    co = random.randint(100000, 999999)
+                    commands = '\n'.join(command.name for command in maybe_cog.__cog_commands__)
+                    e = discord.Embed(color=co, title=f'{maybe_cog.qualified_name}', description=f'{commands}\n\nYou can use {self.bot.command_prefix(self.bot, ctx.message)[2]}help <command name> to get help on a command')
+                    await ctx.send(embed=e)
+            else:
+                command = self.bot.get_command(query)
+                if command.cog.qualified_name == 'Admin' and not await ctx.bot.is_owner(ctx.author):
+                    await ctx.send('Access Denied.')
+                    return
+                co = random.randint(100000, 999999)
+                embed = discord.Embed(color=co, description=command.brief)
+                embed.set_author(name=query)
+                await ctx.send(embed=embed)
     
     @commands.command(brief='I was really tired when making this command.')
     async def whattodotoday(self, ctx):
@@ -147,11 +150,8 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
         if text != 'spamabc':
             if a > 1000:
                 await ctx.send('Error Code 004: Max spam amount is 1000')
-            elif a < 1000:
-                for x in range(a):
-                    await ctx.send(text)
-            elif a == 1000:
-                for x in range(a):
+            elif a < 1000 or a == 1000:
+                for _ in range(a):
                     await ctx.send(text)
     
     @commands.command(brief='Shows an OAuth Invite for the bot')
@@ -160,7 +160,7 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
     
     @commands.command(brief='Couch.')
     async def couch(self, ctx):
-        for x in 'COUCH':
+        for _ in 'COUCH':
             await ctx.send('COUCH')
     
     @commands.command(brief='Bar')
@@ -222,9 +222,9 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
     
     @commands.command(brief='Licking People.')
     async def lick(self, ctx, member:discord.Member=None):
-        if member == None:
+        if member is None:
             member = ctx.author
-        
+
         await ctx.send(f'Bot: *licks {member.mention}*\n{member.mention}: Ew stop that')
     
     @commands.command(brief='Technical Info about the bot')
@@ -325,10 +325,8 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
     
     @commands.command(brief='Makes the bot play music in a VC')
     async def play(self, ctx, url):
-        YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
-        FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
         voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        
+
         if voice is None:
             await ctx.send('Not Connected to VC! Connecting....')
             channel = ctx.author.voice.channel
@@ -339,13 +337,15 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
             voice = await channel.connect()
             await ctx.send('Connected!')
             voice = discord.utils.get(self.bot.voice_clients, guild=ctx.guild)
-        if not voice is None:
+        if voice is not None:
             if not voice.is_playing():
-                    with YoutubeDL(YDL_OPTIONS) as ydl:
-                        info = ydl.extract_info(url, download=False)
-                    URL = info['formats'][0]['url']
-                    voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
-                    voice.is_playing()
+                YDL_OPTIONS = {'format': 'bestaudio', 'noplaylist':'True'}
+                with YoutubeDL(YDL_OPTIONS) as ydl:
+                    info = ydl.extract_info(url, download=False)
+                URL = info['formats'][0]['url']
+                FFMPEG_OPTIONS = {'before_options': '-reconnect 1 -reconnect_streamed 1 -reconnect_delay_max 5', 'options': '-vn'}
+                voice.play(FFmpegPCMAudio(URL, **FFMPEG_OPTIONS))
+                voice.is_playing()
             else:
                 await ctx.send("Already playing song")
                 return
@@ -362,16 +362,16 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
     @commands.command(brief='Makes the bot do a calculation, using safe evaluation')
     async def math(self, ctx, *, expression:str):
         for byte in expression:
-          if not byte in '0123456789+-/* ' :
-            await ctx.send('Error: Unsafe expression detected, not running.')
-            return
-          try:
-              if int(expression.split('**')[0]) >= 99:
-                  await ctx.send('Error: Unsafe expression detected, not running.')
-                  return
-          except ValueError:
-              await ctx.send(eval(expression))
-              return
+            if byte not in '0123456789+-/* ':
+                await ctx.send('Error: Unsafe expression detected, not running.')
+                return
+            try:
+                if int(expression.split('**')[0]) >= 99:
+                    await ctx.send('Error: Unsafe expression detected, not running.')
+                    return
+            except ValueError:
+                await ctx.send(eval(expression))
+                return
     
     @commands.command(brief='Gets a meme from r/memes or r/dankmemes')
     async def meme(self, ctx):
@@ -411,9 +411,7 @@ Please choose one using {self.bot.command_prefix(self.bot, ctx.message)[2]}help 
     @commands.command(brief='Finds the average of numbers')
     async def avg(self, ctx, *args):
         try:
-            values = []
-            for value in args:
-                values.append(int(value))
+            values = [int(value) for value in args]
             await ctx.send('Average of `{}`: {}'.format(values, round(sum(values) / len(values))))
         except ValueError:
             await ctx.send('Error: one of those values is **not a number**, cannot find average.')

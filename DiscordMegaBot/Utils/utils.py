@@ -18,25 +18,16 @@ class Utils:
     def __init__(self):
         pass
     def strl(self, a:list):
-        h = ""
-        for g in a:
-            h+=g
-        return h
+        return "".join(a)
     def addChar(self, char:str, adder:list, referencer:list):
         for x in range(len(referencer)):
             if referencer[x] == char:
                 adder[x] = (char + adder[x])
         return adder
     def strd(self, a:list):
-        h = ""
-        for g in a:
-            h+=(str(g)+'\n')
-        return h
+        return "".join((str(g)+'\n') for g in a)
     def bot_mentioned_in(self, message:discord.Message):
-        if message.content == f'<@{message.guild.me.id}>':
-            return True
-        else:
-            return False
+        return message.content == f'<@{message.guild.me.id}>'
     def indent(self, code:str):
         code = code.split('\n')
         for line_index in range(len(code)):
@@ -51,8 +42,7 @@ class Utils:
         return bot.prefixes[str(guild.id)]
     
     async def moving_bar(self, *, length:int=20):
-        states = []
-        states.append('`[' + ' '*(length+1) + ']`')
+        states = ['`[' + ' '*(length+1) + ']`']
         for i in range(1, length+1):
             states.append(f'`{"[" + "#"*i + " "*(length-i) + "]"}`')
         return states
@@ -85,9 +75,7 @@ class Utils:
     
     async def compute_code(self, code:str):
         output = []
-        if code.__class__.__name__ == 'list':
-            pass
-        else:
+        if code.__class__.__name__ != 'list':
             code = code.split('\n')
         var_dict = {}
         for x in range(len(code)):
@@ -110,7 +98,7 @@ class Utils:
 class DMBText(commands.Context):
     @property
     def is_subclassed(self):
-        return not type(self) == commands.Context
+        return type(self) != commands.Context
     
     async def tick(self, value):
         emoji = '\N{WHITE HEAVY CHECK MARK}' if value else '\N{CROSS MARK}'
