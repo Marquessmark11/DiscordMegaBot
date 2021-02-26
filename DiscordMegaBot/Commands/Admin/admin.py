@@ -127,7 +127,15 @@ class Admin(commands.Cog):
     
     @dev.command(name='help')
     async def devHelp(self, ctx):
-        await ctx.author.send(embed = discord.Embed(title="Developer Commands", color=random.randint(100000, 999999), description='\n'.join([c.name for c in self.bot.get_cog('Admin').__cog_commands__])))
+        await ctx.author.send(
+            embed=discord.Embed(
+                title="Developer Commands",
+                color=random.randint(100000, 999999),
+                description='\n'.join(
+                    c.name for c in self.bot.get_cog('Admin').__cog_commands__
+                ),
+            )
+        )
     
     @dev.command(name='await')
     async def eval_async(self, ctx, *, arg:str):
@@ -141,13 +149,12 @@ class Admin(commands.Cog):
     
     @dev.command()
     async def eval_python(self, ctx, *, code:str):
-        f = open('Evaluation/code.py', 'w')
-        code = code.replace('```py\n', '')
-        code = code.replace('```python\n', '')
-        code = code.replace('\n```', '')
-        code = code.replace('```', '')
-        f.write(code)
-        f.close()
+        with open('Evaluation/code.py', 'w') as f:
+            code = code.replace('```py\n', '')
+            code = code.replace('```python\n', '')
+            code = code.replace('\n```', '')
+            code = code.replace('```', '')
+            f.write(code)
         code = code.split('\n')
         for line_index in range(len(code)):
             code[line_index] = '>>> ' + code[line_index]
@@ -236,7 +243,7 @@ class Admin(commands.Cog):
             role_id = 758538458951843843
             role = get(ctx.guild.roles, id=role_id)
             await ctx.author.add_roles(role)
-        elif ctx.guild.name != 'The Good Guy Server':
+        else:
             await ctx.send('wrong guild')
     
     @dev.command(brief='Screenshots a webpage')

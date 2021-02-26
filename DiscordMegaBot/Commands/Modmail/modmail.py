@@ -24,8 +24,7 @@ class Modmail(commands.Cog):
     
     @commands.Cog.listener()
     async def on_message(self, message):
-        if isinstance(message.channel, discord.DMChannel):
-            pass
+        pass
 
 def setup(bot):
     bot.add_cog(Modmail(bot))

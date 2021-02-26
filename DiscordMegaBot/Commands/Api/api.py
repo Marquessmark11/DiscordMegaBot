@@ -53,9 +53,7 @@ class API(commands.Cog):
     
     @commands.command(brief='Shows unicode info on a character')
     async def charinfo(self, ctx, char:str):
-        values = []
-        for value in char:
-            values.append(to_string(value))
+        values = [to_string(value) for value in char]
         await ctx.send('\n'.join(values))
     
     @commands.command(brief='Maps numbers to emojis')

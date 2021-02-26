@@ -30,8 +30,7 @@ def get_prefix(bot, message):
 bot = DMBot(command_prefix=get_prefix, intents=intents, case_insensitive=insensitiveCase, owner_ids={376129806313455616, 528290553415335947})
 
 def who(person, command):
-    trigger = f'{person} just ran {command}'
-    return trigger
+    return f'{person} just ran {command}'
 
 @bot.command()
 @commands.is_owner()
@@ -119,9 +118,8 @@ async def setprefix(ctx, prefix:str):
 async def on_command_error(ctx, error):
     if isinstance(error, commands.CommandNotFound):
         return
-    else:
-        await ctx.send('```py\n' + str(error) + '\n```')
-        raise error
+    await ctx.send('```py\n' + str(error) + '\n```')
+    raise error
 
 @bot.ipc.route()
 async def get_member_count(data):

@@ -8,7 +8,7 @@ class General(commands.Cog):
     
     @commands.command(brief='Shows you the avatar of the person you choose, it will be you if you don\'t choose one')
     async def yourAvatar(self, ctx, *, member:discord.Member=None):
-        if member == None:
+        if member is None:
             member = ctx.author
         e = discord.Embed(color=random.randint(100000, 999999))
         e.set_image(url=member.avatar_url)
@@ -16,28 +16,25 @@ class General(commands.Cog):
     
     @commands.command(brief='Shows you the discord version of the avatar of the person you choose, you if none chosen')
     async def yourDiscordPFP(self, ctx, member:discord.Member=None):
-        if member == None:
+        if member is None:
             member = ctx.author
         avatar = member.default_avatar_url
         await ctx.send(avatar)
     
     @commands.command(brief='Dm\'s the person you choose')
     async def dm(self, ctx, member : discord.Member, *, text="placeholder"):
-        if member.dm_channel == None:
+        if member.dm_channel is None:
             channel = await member.create_dm()
             await channel.send(text)
-            await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
-        elif member.dm_channel != None:
+        else:
             await member.dm_channel.send(text)
-            await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
+        await ctx.send('`' + text + '`' + f' was sent to {member.display_name}')
     
     @commands.command(brief='Shows you info on the person you choose, you if none chosen')
     async def whoIs(self, ctx, member:discord.Member=None):
-        if member == None:
+        if member is None:
             member = ctx.author
-        membersRolesNames = []
-        for role in member.roles:
-            membersRolesNames.append(role.name)
+        membersRolesNames = [role.name for role in member.roles]
         integer = random.randint(100000, 999999)
         e = discord.Embed(color=integer)
         e.set_footer(text='@Copyright 2020 Connor Tippets')

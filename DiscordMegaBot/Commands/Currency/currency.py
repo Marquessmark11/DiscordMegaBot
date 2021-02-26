@@ -38,27 +38,27 @@ class Currency(commands.Cog):
             return
         with open(currency_db_path, 'r') as f:
             currency = json.load(f)
-        
+
         success = random.choice(['no', 'yes'])
         if success == 'no' or self.isInDatabase(member) is False:
             await ctx.send('you were found or they have no money lmao')
             return
-        if success == 'yes':
-            if self.isInDatabase(member) is True and self.isInDatabase(ctx.author) is True:
+        if success == 'yes' and self.isInDatabase(member) is True:
+            if self.isInDatabase(ctx.author) is True:
                 stolen = random.randint(0, currency[str(member.id)])
                 currency[str(member.id)] -= stolen
                 currency[str(ctx.author.id)] += stolen
                 self.bot.currency_cache = currency
-                
+
                 with open(currency_db_path, 'w') as f:
                     json.dump(currency, f, indent=4)
                 await ctx.send('Stolen {} from {}'.format(stolen, member.name))
-            elif self.isInDatabase(member) is True and self.isInDatabase(ctx.author) is False:
+            elif self.isInDatabase(ctx.author) is False:
                 stolen = random.randint(0, currency[str(member.id)])
                 currency[str(member.id)] -= stolen
                 currency[str(ctx.author.id)] = stolen
                 self.bot.currency_cache = currency
-                
+
                 with open(currency_db_path, 'w') as f:
                     json.dump(currency, f, indent=4)
                 await ctx.send('Stolen {} from {}'.format(stolen, member.name))
