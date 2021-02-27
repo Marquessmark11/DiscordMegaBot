@@ -29,23 +29,31 @@ class Adventure:
                 pass
         return m
     
+    async def treehouse(self):
+        await self.channel.send('You found your way into the treehouse, in there you find a chest... go to the chest, or leave? (chest/leave)')
+        response = await self.wait_for()
+        if response.content.lower() == 'chest':
+            await self.channel.send('You go to the chest, and find gold in it! What a delight. This is the end of your adventure.')
+            return response
+        return response
+    
+    async def cave(self):
+        await self.channel.send('You are in a cave, and you find a magical crystal... touch it, or leave? (crystal/leave)')
+        response = await self.wait_for()
+        if response.content.lower() == 'crystal':
+            await self.channel.send('The crystal uses its magical powers to disintegrate you! Well, i guess thats the end.')
+            return response
+        return response
+    
     async def main(self):
         await self.channel.send('You are standing in the middle of a forest, you have a cave and treehouse in front of you, which one do you pick? (cave/treehouse)')
         response = await self.wait_for()
         if response.content.lower() == 'treehouse':
-            await self.channel.send('You found your way into the treehouse, in there you find a chest... go to the chest, or leave? (chest/leave)')
-            response = await self.wait_for()
-            if response.content.lower() == 'chest':
-                await self.channel.send('You go to the chest, and find gold in it! What a delight. This is the end of your adventure.')
-                return
+            response = await self.treehouse()
             if response.content.lower() == 'leave':
                 await self.main()
         if response.content.lower() == 'cave':
-            await self.channel.send('You are in a cave, and you find a magical crystal... touch it, or leave? (crystal/leave)')
-            response = await self.wait_for()
-            if response.content.lower() == 'crystal':
-                await self.channel.send('The crystal uses its magical powers to disintegrate you! Well, i guess thats the end.')
-                return
+            response = await self.cave()
             if response.content.lower() == 'leave':
                 await self.main()
         if response.content.lower() == 'leave':
