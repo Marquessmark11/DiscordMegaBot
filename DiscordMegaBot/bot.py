@@ -12,6 +12,7 @@ import subprocess as sp
 from Utils.utils import DMBText, DMBot, utils
 from asyncdagpi import Client
 import mystbin
+from adventure import Adventure
 
 start = time.time()
 intents = api.Intents.default()
@@ -144,6 +145,12 @@ async def on_message(message):
         embed = api.Embed(title='Hello!', color=api.Color.green(), description=f'My prefix is {get_prefix(bot, message)[2]}, and you can mention me, of course.')
         await message.channel.send(embed=embed)
     await bot.process_commands(message)
+
+@bot.command(brief='Start an adventure, a throwback to one of my old bots :D')
+async def adventure(ctx):
+    advent = Adventure(bot, ctx.author, ctx.channel)
+    await advent.start()
+
 
 bot.ipc.start()
 bot.run(token)
