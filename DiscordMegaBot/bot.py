@@ -148,8 +148,9 @@ async def on_message(message):
 
 @bot.command(brief='Start an adventure, a throwback to one of my old bots :D')
 async def adventure(ctx):
-    advent = Adventure(bot, ctx.author, ctx.channel)
-    await advent.start()
+    adventure = Adventure(bot, ctx.author, ctx.channel)
+    await adventure.start()
+    # I wanted something to commit lmfao (you can remove this) -XENON
 
 
 bot.ipc.start()
